@@ -13,15 +13,13 @@ export const participantesRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
-      const [respuesta] = await ctx.db
+      const respuesta = await ctx.db
         .insert(participantes)
         .values(input)
         .returning();
 
       if (!respuesta) {
-        throw new Error("Error al crear el comentario");
+        throw new Error("Error al crear participante");
       }
     }),
 
@@ -32,11 +30,11 @@ export const participantesRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const channel = await ctx.db.query.participantes.findFirst({
+      const participante = await ctx.db.query.participantes.findFirst({
         where: eq(participantes.id, input.id),
       });
 
-      return channel;
+      return participante;
     }),
 
   list: publicProcedure.query(async ({}) => {

@@ -2,9 +2,9 @@
 
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
-import { List, ListTile } from "./components/ui/list";
-import { Button } from "./components/ui/button";
-import { Title } from "./components/ui/title";
+import { List, ListTile } from "../components/ui/list";
+import { Button } from "../components/ui/button";
+import { Title } from "../components/ui/title";
 
 export default function Page() {
 
@@ -25,15 +25,6 @@ const router = useRouter();
     router.refresh();
   }
 
-async function Delete(Id: number) {
-
-  await deleteP({
-      id: Id
-  })
-  
-  router.refresh()
-
-}
 
   return (
       <main className="flex min-h-screen flex-col items-center justify-center">
@@ -53,11 +44,11 @@ async function Delete(Id: number) {
             <ListTile
             key={integrante.id}
             title={integrante.lastname}
-            href={`/${integrante.id}`}
+            href={`/integrantes/${integrante.id}`}
             // onClick={() => deleteP}
             />
           
-          <Button className="mt-1" onClick={() => Delete(integrante.id)}>Borrar</Button>
+         
             </div>
           )
         }) : (<h1>No existen participantes</h1>)}
