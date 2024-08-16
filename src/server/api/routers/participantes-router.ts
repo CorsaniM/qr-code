@@ -10,6 +10,7 @@ export const participantesRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         lastname: z.string(),
+        grupoId: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -48,6 +49,7 @@ export const participantesRouter = createTRPCRouter({
         id: z.number(),
         name: z.string(),
         lastname: z.string(),
+        grupoId: z.number(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
