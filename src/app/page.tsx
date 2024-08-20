@@ -20,7 +20,8 @@ const router = useRouter();
   async function HandleCreate() {
     await CreateParticipantes({
       name: "Fran",
-      lastname: "Marmo"
+      lastname: "Marmo",
+      grupoId: 0
     })
     router.refresh();
   }
