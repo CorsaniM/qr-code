@@ -1,6 +1,5 @@
 "use client"
 
-
 import { Title } from "./components/ui/title";
 import Link from "next/link";
 
@@ -13,6 +12,4 @@ export default function Page() {
 
      <Link href="/integrantes">Holaaaa</Link>
 
-      </main>
-  );
 }
