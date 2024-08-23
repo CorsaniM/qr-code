@@ -13,12 +13,16 @@ export const gruposRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      await new Promise((resolve) => setTimeout(resolve, 500)); // Simulación de retardo
 
-      const [respuesta] = await ctx.db.insert(grupos).values(input).returning();
-
-      if (!respuesta) {
-        throw new Error("Error al crear el comentario");
+      try {
+        const [respuesta] = await ctx.db
+          .insert(grupos)
+          .values(input)
+          .returning();
+        return respuesta;
+      } catch (error: any) {
+        throw new Error("Error al crear el grupo: " + error.message);
       }
     }),
   list: publicProcedure.query(async ({}) => {
@@ -51,11 +55,20 @@ export const gruposRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const Grupos = await ctx.db.query.grupos.findFirst({
-        where: eq(grupos.id, input.id),
-      });
+      const updatedGroup = await ctx.db
+        .update(grupos)
+        .set({
+          name: input.name,
+          fecha_ultimo_trabajo: input.fecha_ultimo_trabajo,
+        })
+        .where(eq(grupos.id, input.id))
+        .returning(); // Para devolver los datos actualizados
 
-      return Grupos;
+      if (!updatedGroup) {
+        throw new Error("Error al actualizar el grupo");
+      }
+
+      return updatedGroup;
     }),
 
   delete: publicProcedure
@@ -65,6 +78,15 @@ export const gruposRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ input }) => {
-      await db.delete(grupos).where(eq(grupos.id, input.id));
+      const deletedGroup = await db
+        .delete(grupos)
+        .where(eq(grupos.id, input.id))
+        .returning();
+
+      if (!deletedGroup) {
+        throw new Error("Error al eliminar el grupo");
+      }
+
+      return { success: true };
     }),
 });
