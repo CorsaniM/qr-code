@@ -8,6 +8,8 @@ import { Title } from "../components/ui/title";
 import { useState } from "react";
 import { boolean } from "drizzle-orm/mysql-core";
 import { error } from "console";
+import { z } from "zod"
+
 
 
 
@@ -36,7 +38,9 @@ const {data: grupos} = api.grupos.list.useQuery()
 
 const participantes = grupos?.flatMap(grupo => grupo.participantes) ?? [];
 
-
+const longText = z.object({
+  text: z.string().max(12),
+})
 
 const router = useRouter();
 
@@ -59,6 +63,7 @@ const [isLoading, setIsloading] = useState(false)
 
       return null
     }
+    longText.parse({ text:name })
     await CreateParticipantes({
       name: name,
       lastname: lasname,
@@ -67,16 +72,20 @@ const [isLoading, setIsloading] = useState(false)
     router.refresh();
   }
 
-
+const [error, setError] = useState("")
   async function HandleCreateGrupo() {
-
+    
+  if(!nameGrupo){
+    return
+    setError("no se encontro el nombre del grupo")
+  }
     setIsloading(true)
-
+    
     await CreateGrupo({
       name: nameGrupo,
       fecha_ultimo_trabajo: new Date()
     })
-
+    
     setIsloading(false)
     router.refresh();
   }
@@ -87,7 +96,6 @@ const [isLoading, setIsloading] = useState(false)
       <Title>Hola</Title>
 
 
-      <button className="bord" disabled={isPending} onClick={HandleCreate}>crear participantes</button>
       <br/>
 
     <div className="border border-dashed p-10">
@@ -98,7 +106,7 @@ const [isLoading, setIsloading] = useState(false)
             <div className="flex">
             <ListTile
             key={integrante.id}
-            title={integrante.lastname + " " + integrante.grupoId}
+            title={integrante.name + " " + integrante.grupoId}
             href={`/integrantes/${integrante.id}`}
             // onClick={() => deleteP}
             />
@@ -156,7 +164,7 @@ const [isLoading, setIsloading] = useState(false)
       </div>
 
 
-<button onClick={HandleCreate}>crear participante</button>
+<button onClick={HandleCreate} disabled={isPending}>crear participante</button>
 
 
 <div className="border border-dashed p-10">
@@ -165,8 +173,18 @@ const [isLoading, setIsloading] = useState(false)
                   <Input
                                       value={nameGrupo}
                                       placeholder='nombre del grupo...'
-                                      onChange={(e) => setNameGrupo(e.target.value)}
+                                      onChange={(e) =>{ setNameGrupo(e.target.value)
+                                        try{
+                                          longText.parse({text:nameGrupo})
+                                          setError("")
+                                        }catch(e){
+                                          setError("ingrese un nombre menor de 12 caracteres")
+                                          }
+                                      }}
                                       />
+                                      {error && <p className="text-red-500">{error}</p>}
+
+
                                       <button onClick={HandleCreateGrupo} disabled={isLoading}>crear grupo</button>
                                       </div>
                                       <List>
