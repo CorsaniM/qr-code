@@ -10,19 +10,20 @@ export const participantesRouter = createTRPCRouter({
       z.object({
         name: z.string(),
         lastname: z.string(),
+        grupoId: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      await new Promise((resolve) => setTimeout(resolve, 500));
-
       const [respuesta] = await ctx.db
         .insert(participantes)
         .values(input)
         .returning();
 
       if (!respuesta) {
-        throw new Error("Error al crear el comentario");
+        throw new Error("Error al crear participante");
       }
+
+      return respuesta; // Devolver el participante creado
     }),
 
   get: publicProcedure
@@ -32,15 +33,19 @@ export const participantesRouter = createTRPCRouter({
       }),
     )
     .query(async ({ input, ctx }) => {
-      const channel = await ctx.db.query.participantes.findFirst({
+      const participante = await ctx.db.query.participantes.findFirst({
         where: eq(participantes.id, input.id),
       });
 
-      return channel;
+      if (!participante) {
+        throw new Error("Participante no encontrado");
+      }
+
+      return participante;
     }),
 
-  list: publicProcedure.query(async ({}) => {
-    const participantes = await db.query.participantes.findMany();
+  list: publicProcedure.query(async ({ ctx }) => {
+    const participantes = await ctx.db.query.participantes.findMany();
     return participantes;
   }),
 
@@ -50,14 +55,25 @@ export const participantesRouter = createTRPCRouter({
         id: z.number(),
         name: z.string(),
         lastname: z.string(),
+        grupoId: z.number(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
-      const Participantes = await ctx.db.query.participantes.findFirst({
-        where: eq(participantes.id, input.id),
-      });
+      const [updatedParticipante] = await ctx.db
+        .update(participantes)
+        .set({
+          name: input.name,
+          lastname: input.lastname,
+          grupoId: input.grupoId,
+        })
+        .where(eq(participantes.id, input.id))
+        .returning();
 
-      return Participantes;
+      if (!updatedParticipante) {
+        throw new Error("Error al actualizar el participante");
+      }
+
+      return updatedParticipante;
     }),
 
   delete: publicProcedure
@@ -66,7 +82,16 @@ export const participantesRouter = createTRPCRouter({
         id: z.number(),
       }),
     )
-    .mutation(async ({ input }) => {
-      await db.delete(participantes).where(eq(participantes.id, input.id));
+    .mutation(async ({ input, ctx }) => {
+      const deletedParticipante = await ctx.db
+        .delete(participantes)
+        .where(eq(participantes.id, input.id))
+        .returning();
+
+      if (!deletedParticipante) {
+        throw new Error("Error al eliminar el participante");
+      }
+
+      return { success: true, message: "Participante eliminado correctamente" };
     }),
 });
