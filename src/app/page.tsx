@@ -12,4 +12,7 @@ export default function Page() {
 
      <Link href="/integrantes">Holaaaa</Link>
 
+    </main>
+  )
+
 }

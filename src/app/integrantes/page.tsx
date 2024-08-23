@@ -18,6 +18,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "../components/ui/select"
+import { Input } from "../components/ui/input";
 
 export default function Page() {
 
@@ -33,7 +34,7 @@ const {data: grupos} = api.grupos.list.useQuery()
 
 
 
-const participantes = grupos?.flatMap(grupo => grupo.participantes) || [];
+const participantes = grupos?.flatMap(grupo => grupo.participantes) ?? [];
 
 
 
@@ -89,6 +90,7 @@ const [isLoading, setIsloading] = useState(false)
       <button className="bord" disabled={isPending} onClick={HandleCreate}>crear participantes</button>
       <br/>
 
+    <div className="border border-dashed p-10">
 
     <List>
         {participantes ? participantes!.map((integrante) => {
@@ -106,21 +108,22 @@ const [isLoading, setIsloading] = useState(false)
           )
         }) : (<h1>No existen participantes</h1>)}
     </List>
+    </div>
 
 
-      <div className="mt-10 mb-10">
+      <div className="border border-dashed p-10">
                   <h1>Crear participante</h1>
                   
          
           <label>Nombre del participante</label>
 
-          <input
+          <Input
                                       value={name}
                                       placeholder='nombre...'
                                       onChange={(e) => setName(e.target.value)}
                                   />
 
-          <input
+          <Input
                                       value={lasname}
                                       placeholder='apellido...'
                                       onChange={(e) => setLastname(e.target.value)}
@@ -156,10 +159,10 @@ const [isLoading, setIsloading] = useState(false)
 <button onClick={HandleCreate}>crear participante</button>
 
 
-<div className="mt-10 mb-10">
+<div className="border border-dashed p-10">
 
 <label>Nombre del grupo</label>
-                  <input
+                  <Input
                                       value={nameGrupo}
                                       placeholder='nombre del grupo...'
                                       onChange={(e) => setNameGrupo(e.target.value)}
