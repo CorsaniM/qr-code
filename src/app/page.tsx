@@ -7,10 +7,10 @@ export default function Page() {
 
   return (
       <main className="flex min-h-screen flex-col items-center justify-center">
-      <Title>Hola</Title>
+      <Title>Bienvenido</Title>
 
 
-     <Link href="/integrantes">Holaaaa</Link>
+     <Link href="/integrantes">pagina integrantes</Link>
 
     </main>
   )

@@ -3,11 +3,9 @@
 import { useRouter } from "next/navigation";
 import { api } from "~/trpc/react";
 import { List, ListTile } from "../components/ui/list";
-import { Button } from "../components/ui/button";
 import { Title } from "../components/ui/title";
 import { useState } from "react";
-import { boolean } from "drizzle-orm/mysql-core";
-import { error } from "console";
+
 
 
 
@@ -19,6 +17,8 @@ import {
   SelectValue,
 } from "../components/ui/select"
 import { Input } from "../components/ui/input";
+import { toast } from "sonner";
+import { useQueryClient } from "@tanstack/react-query";
 
 export default function Page() {
 
@@ -47,30 +47,44 @@ const [isLoading, setIsloading] = useState(false)
 
 
   const [name, setName] = useState("")
-  const [lasname, setLastname] = useState("")
+  const [lastname, setLastname] = useState("")
 
 
-
+  const queryClient = useQueryClient();
+  
   async function HandleCreate() {
-    console.log("grupos",grupos?.map((x) => x.id))
-
+    
+    if(!grupoId || !name || !lastname){
+      return toast.error("Error");
+      
+  }
     if(!grupos?.some((x) => x.id === grupoId)){
-      console.log("No existe el grupo: ", grupoId)
-
-      return null
+      return toast.error("No existe el grupo");
     }
+try{
     await CreateParticipantes({
       name: name,
-      lastname: lasname,
+      lastname: lastname,
       grupoId: grupoId
     })
-    router.refresh();
+
+    toast.success("Cambios guardados correctamente")
+    queryClient.invalidateQueries()
+
+            } catch (e) {
+                
+                toast.error("Error");
+            }
   }
 
 
   async function HandleCreateGrupo() {
 
     setIsloading(true)
+    if(!nameGrupo){
+      return toast.error("Error");
+  }
+  try{
 
     await CreateGrupo({
       name: nameGrupo,
@@ -78,7 +92,12 @@ const [isLoading, setIsloading] = useState(false)
     })
 
     setIsloading(false)
-    router.refresh();
+    toast.success("Cambios guardados correctamente")
+    queryClient.invalidateQueries()
+            } catch (e) {
+                
+                toast.error("Error");
+            }
   }
 
 
@@ -89,9 +108,8 @@ const [isLoading, setIsloading] = useState(false)
 
       <button className="bord" disabled={isPending} onClick={HandleCreate}>crear participantes</button>
       <br/>
-
-    <div className="border border-dashed p-10">
-
+<div className="flex justify-between w-1/2">
+    <div className="border border-dashed p-10 mb-10">
     <List>
         {participantes ? participantes!.map((integrante) => {
           return(
@@ -100,10 +118,8 @@ const [isLoading, setIsloading] = useState(false)
             key={integrante.id}
             title={integrante.lastname + " " + integrante.grupoId}
             href={`/integrantes/${integrante.id}`}
-            // onClick={() => deleteP}
             />
-          
-         
+
             </div>
           )
         }) : (<h1>No existen participantes</h1>)}
@@ -111,10 +127,8 @@ const [isLoading, setIsloading] = useState(false)
     </div>
 
 
-      <div className="border border-dashed p-10">
+      <div className="border border-dashed p-10 mb-10">
                   <h1>Crear participante</h1>
-                  
-         
           <label>Nombre del participante</label>
 
           <Input
@@ -124,7 +138,7 @@ const [isLoading, setIsloading] = useState(false)
                                   />
 
           <Input
-                                      value={lasname}
+                                      value={lastname}
                                       placeholder='apellido...'
                                       onChange={(e) => setLastname(e.target.value)}
                                   />
@@ -142,24 +156,15 @@ const [isLoading, setIsloading] = useState(false)
                 
               </SelectContent>
             </Select>
+            <br />
+<button onClick={HandleCreate}>crear participante</button                        >
 
-            {/* {marcas &&
-                  marcas.map((marca) => (
-                    <SelectItem
-                      key={marca?.id}
-                      value={marca?.id}
-                      className="rounded-none border-b border-gray-600"
-                    >
-                      {marca?.name}
-                    </SelectItem>
-                  ))} */}
       </div>
 
 
-<button onClick={HandleCreate}>crear participante</button>
 
 
-<div className="border border-dashed p-10">
+<div className="border border-dashed p-10 mb-10">
 
 <label>Nombre del grupo</label>
                   <Input
@@ -185,7 +190,7 @@ const [isLoading, setIsloading] = useState(false)
           )
         }) : (<h1>No existen participantes</h1>)}
     </List>
-      
+    </div>
       
       </main>
 
