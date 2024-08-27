@@ -5,6 +5,8 @@ import { api } from "~/trpc/react";
 import { List, ListTile } from "../components/ui/list";
 import { Title } from "../components/ui/title";
 import { useState } from "react";
+import { boolean } from "drizzle-orm/mysql-core";
+import { z } from "zod"
 
 
 
@@ -36,7 +38,9 @@ const {data: grupos} = api.grupos.list.useQuery()
 
 const participantes = grupos?.flatMap(grupo => grupo.participantes) ?? [];
 
-
+const longText = z.object({
+  text: z.string().max(12),
+})
 
 const router = useRouter();
 
@@ -62,6 +66,7 @@ const [isLoading, setIsloading] = useState(false)
       return toast.error("No existe el grupo");
     }
 try{
+    longText.parse({ text:name })
     await CreateParticipantes({
       name: name,
       lastname: lastname,
@@ -77,9 +82,13 @@ try{
             }
   }
 
-
+const [error, setError] = useState("")
   async function HandleCreateGrupo() {
-
+    
+  if(!nameGrupo){
+    return
+    setError("no se encontro el nombre del grupo")
+  }
     setIsloading(true)
     if(!nameGrupo){
       return toast.error("Error");
@@ -90,7 +99,7 @@ try{
       name: nameGrupo,
       fecha_ultimo_trabajo: new Date()
     })
-
+    
     setIsloading(false)
     toast.success("Cambios guardados correctamente")
     queryClient.invalidateQueries()
@@ -106,7 +115,6 @@ try{
       <Title>Hola</Title>
 
 
-      <button className="bord" disabled={isPending} onClick={HandleCreate}>crear participantes</button>
       <br/>
 <div className="flex justify-between w-1/2">
     <div className="border border-dashed p-10 mb-10">
@@ -116,7 +124,7 @@ try{
             <div className="flex">
             <ListTile
             key={integrante.id}
-            title={integrante.lastname + " " + integrante.grupoId}
+            title={integrante.name + " " + integrante.grupoId}
             href={`/integrantes/${integrante.id}`}
             />
 
@@ -170,8 +178,18 @@ try{
                   <Input
                                       value={nameGrupo}
                                       placeholder='nombre del grupo...'
-                                      onChange={(e) => setNameGrupo(e.target.value)}
+                                      onChange={(e) =>{ setNameGrupo(e.target.value)
+                                        try{
+                                          longText.parse({text:nameGrupo})
+                                          setError("")
+                                        }catch(e){
+                                          setError("ingrese un nombre menor de 12 caracteres")
+                                          }
+                                      }}
                                       />
+                                      {error && <p className="text-red-500">{error}</p>}
+
+
                                       <button onClick={HandleCreateGrupo} disabled={isLoading}>crear grupo</button>
                                       </div>
                                       <List>
