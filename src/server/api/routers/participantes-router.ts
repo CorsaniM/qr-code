@@ -43,7 +43,19 @@ export const participantesRouter = createTRPCRouter({
 
       return participante;
     }),
+  getByGrupoId: publicProcedure
+    .input(
+      z.object({
+        grupoId: z.number(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const participante = await ctx.db.query.participantes.findMany({
+        where: eq(participantes?.grupoId, input.grupoId),
+      });
 
+      return participante;
+    }),
   list: publicProcedure.query(async ({ ctx }) => {
     const participantes = await ctx.db.query.participantes.findMany();
     return participantes;

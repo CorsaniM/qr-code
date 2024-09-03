@@ -111,11 +111,11 @@ const [error, setError] = useState("")
 
 
   return (
-      <main className="flex min-h-screen flex-col items-center justify-center">
-      <Title>Hola</Title>
+     
 
 
-      <br/>
+
+
 <div className="flex justify-between w-1/2">
     <div className="border border-dashed p-10 mb-10">
     <List>
@@ -209,8 +209,7 @@ const [error, setError] = useState("")
         }) : (<h1>No existen participantes</h1>)}
     </List>
     </div>
-      
-      </main>
+
 
   );
 }
