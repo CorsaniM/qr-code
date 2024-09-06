@@ -34,7 +34,15 @@ const {data: grupos} = api.grupos.list.useQuery()
 
 
 
-
+const { mutateAsync: update} = api.participants.update.useMutation()
+async function HandleUpdate() {
+  await update({
+    id: 1,
+    name: name,
+    lastname: lastname,
+    grupoId: 0
+  })
+}
 
 const participantes = grupos?.flatMap(grupo => grupo.participantes) ?? [];
 

@@ -21,13 +21,13 @@ export const gruposRouter = createTRPCRouter({
           .values(input)
           .returning();
         return respuesta;
-      } catch (error: any) {
-        throw new Error("Error al crear el grupo: " + error.message);
+      } catch {
+        throw new Error("Error al crear el grupo: ");
       }
     }),
   list: publicProcedure.query(async ({ ctx }) => {
     const Grupos = await db.query.grupos.findMany({
-      with: { participantes: true },
+      with: { participantes: true, tareas: true },
     });
 
     return Grupos;
@@ -42,7 +42,7 @@ export const gruposRouter = createTRPCRouter({
     .query(async ({ input, ctx }) => {
       const channel = await ctx.db.query.grupos.findFirst({
         where: eq(grupos.id, input.id),
-        with: { participantes: true },
+        with: { participantes: true, tareas: true },
       });
       //grupo => many participantes
       return channel;

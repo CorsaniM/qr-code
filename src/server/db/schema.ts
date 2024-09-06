@@ -6,6 +6,26 @@ import { index, int, sqliteTableCreator, text } from "drizzle-orm/sqlite-core";
 
 export const createTable = sqliteTableCreator((name) => `qr-code_${name}`);
 
+export const tareas = createTable(
+  "tareas",
+  {
+    id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+    title: text("name", { length: 256 }),
+    grupoid: int("grupoid").references(() => grupos.id),
+    description: text("description", { length: 256 }),
+    fecha: int("fecha", { mode: "timestamp" }),
+    createdAt: int("created_at", { mode: "timestamp" })
+      .default(sql`(unixepoch())`)
+      .notNull(),
+    updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
+      () => new Date(),
+    ),
+  },
+  (example) => ({
+    titleIndex: index("title_idx").on(example.title),
+  }),
+)
+
 export const grupos = createTable(
   "grupo",
   {
@@ -39,13 +59,18 @@ export const participantes = createTable("participantes", {
   ),
 });
 
-export const participantesRelations = relations(participantes, ({ one }) => ({
-  grupos: one(grupos, {
-    fields: [participantes.grupoId],
-    references: [grupos.id],
-  }),
+export const participantesRelations = relations(participantes, ({ many }) => ({
+  grupos: many(grupos),
 }));
 
-export const gruposRelations = relations(grupos, ({ one, many }) => ({
+export const gruposRelations = relations(grupos, ({ many }) => ({
   participantes: many(participantes),
+  tareas: many(tareas),
+}));
+
+export const tareasRelations = relations(tareas, ({ one }) => ({
+  grupos: one(grupos, {
+    fields: [tareas.grupoid],
+    references: [grupos.id],
+  }),
 }));

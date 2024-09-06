@@ -24,8 +24,9 @@ export default function RootLayout({
         <Sidenav/>
         <div className="mb-10 mt-40 mr-36 flex justify-center">
 
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+        <TRPCReactProvider>{children}
         <Toaster />
+        </TRPCReactProvider>
         </div>
 
       </body>
