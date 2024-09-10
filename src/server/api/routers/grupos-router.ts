@@ -25,7 +25,7 @@ export const gruposRouter = createTRPCRouter({
         throw new Error("Error al crear el grupo: ");
       }
     }),
-  list: publicProcedure.query(async ({ ctx }) => {
+  list: publicProcedure.query(async () => {
     const Grupos = await db.query.grupos.findMany({
       with: { participantes: true, tareas: true },
     });

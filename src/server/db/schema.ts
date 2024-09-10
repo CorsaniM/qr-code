@@ -24,8 +24,20 @@ export const tareas = createTable(
   (example) => ({
     titleIndex: index("title_idx").on(example.title),
   }),
-)
+);
 
+export const participantes = createTable("participantes", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  name: text("name", { length: 256 }),
+  lastname: text("lastname", { length: 256 }),
+  createdAt: int("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  grupoId: int("grupoId").references(() => grupos.id),
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
+    () => new Date(),
+  ),
+});
 export const grupos = createTable(
   "grupo",
   {
@@ -45,22 +57,11 @@ export const grupos = createTable(
     nameIndex: index("name_idx").on(example.name),
   }),
 );
-
-export const participantes = createTable("participantes", {
-  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-  name: text("name", { length: 256 }),
-  lastname: text("lastname", { length: 256 }),
-  createdAt: int("created_at", { mode: "timestamp" })
-    .default(sql`(unixepoch())`)
-    .notNull(),
-  grupoId: int("grupoId").references(() => grupos.id),
-  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
-    () => new Date(),
-  ),
-});
-
-export const participantesRelations = relations(participantes, ({ many }) => ({
-  grupos: many(grupos),
+export const participantesRelations = relations(participantes, ({ one }) => ({
+  grupos: one(grupos, {
+    fields: [participantes.grupoId],
+    references: [grupos.id],
+  }),
 }));
 
 export const gruposRelations = relations(grupos, ({ many }) => ({

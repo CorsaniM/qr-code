@@ -129,9 +129,9 @@ const [error, setError] = useState("")
     <List>
         {participantes ? participantes!.map((integrante) => {
           return(
-            <div className="flex">
+            <div key={integrante.id} className="flex">
             <ListTile
-            key={integrante.id}
+            
             title={integrante.name + " " + integrante.grupoId}
             href={`/integrantes/${integrante.id}`}
             />
@@ -203,9 +203,8 @@ const [error, setError] = useState("")
                                       <List>
         {grupos ? grupos!.map((grupo) => {
           return(
-            <div className="flex">
+            <div  key={grupo.id} className="flex">
             <ListTile
-            key={grupo.id}
             title={grupo.name! + " " + grupo.id}
             href={`/grupos/${grupo.id}`}
             // onClick={() => deleteP}
