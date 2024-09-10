@@ -41,7 +41,7 @@ export default function IntegrantePage(props: {integranteId: number}){
         })
         
         router.push("./")
-        queryClient.invalidateQueries()
+        await queryClient.invalidateQueries()
     }
 
 
@@ -97,7 +97,7 @@ export default function IntegrantePage(props: {integranteId: number}){
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
-              {grupos && grupos.map((grupo) => (
+              {grupos?.map((grupo) => (
                   <SelectItem value={grupo.id.toString()} key={grupo.id}>{grupo.name}</SelectItem>
             
             ))}

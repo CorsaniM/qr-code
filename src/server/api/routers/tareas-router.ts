@@ -10,6 +10,7 @@ export const tareasRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         grupoId: z.number(),
+        participanteid: z.number(),
         description: z.string(),
         fecha:z.date(),
         createdAt: z.date(),
@@ -69,6 +70,7 @@ export const tareasRouter = createTRPCRouter({
         id: z.number(),
         title: z.string(),
         grupoId: z.number(),
+        partid: z.number(),
         description: z.string(),
         fecha:z.date(),
         createdAt: z.date(),
@@ -80,6 +82,7 @@ export const tareasRouter = createTRPCRouter({
         .set({
             title: input.title,
             grupoid: input.grupoId,
+            participantesid: input.partid,
             description: input.description,
             fecha: input.fecha,
             createdAt: input.createdAt,

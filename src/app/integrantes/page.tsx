@@ -82,7 +82,7 @@ try{
     })
 
     toast.success("Cambios guardados correctamente")
-    queryClient.invalidateQueries()
+    await queryClient.invalidateQueries()
 
             } catch (e) {
                 
@@ -110,7 +110,7 @@ const [error, setError] = useState("")
     
     setIsloading(false)
     toast.success("Cambios guardados correctamente")
-    queryClient.invalidateQueries()
+    await queryClient.invalidateQueries()
             } catch (e) {
                 
                 toast.error("Error");
@@ -127,7 +127,7 @@ const [error, setError] = useState("")
 <div className="flex justify-between w-1/2">
     <div className="border border-dashed p-10 mb-10">
     <List>
-        {participantes ? participantes!.map((integrante) => {
+        {participantes ? participantes.map((integrante) => {
           return(
             <div key={integrante.id} className="flex">
             <ListTile
@@ -164,7 +164,7 @@ const [error, setError] = useState("")
                 <SelectValue placeholder="Theme" />
               </SelectTrigger>
               <SelectContent>
-              {grupos && grupos.map((grupo) => (
+              {grupos?.map((grupo) => (
                   <SelectItem value={grupo.id.toString()} key={grupo.id}>{grupo.name}</SelectItem>
             
             ))}
@@ -201,7 +201,7 @@ const [error, setError] = useState("")
                                       <button onClick={HandleCreateGrupo} disabled={isLoading}>crear grupo</button>
                                       </div>
                                       <List>
-        {grupos ? grupos!.map((grupo) => {
+        {grupos ? grupos.map((grupo) => {
           return(
             <div  key={grupo.id} className="flex">
             <ListTile

@@ -12,6 +12,7 @@ export const tareas = createTable(
     id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     title: text("name", { length: 256 }),
     grupoid: int("grupoid").references(() => grupos.id),
+    participantesid: int("participantesid").references(() => participantes.id),
     description: text("description", { length: 256 }),
     fecha: int("fecha", { mode: "timestamp" }),
     createdAt: int("created_at", { mode: "timestamp" })
@@ -73,5 +74,9 @@ export const tareasRelations = relations(tareas, ({ one }) => ({
   grupos: one(grupos, {
     fields: [tareas.grupoid],
     references: [grupos.id],
+  }),
+  participantes: one(participantes, {
+    fields: [tareas.participantesid],
+    references: [participantes.id],
   }),
 }));
