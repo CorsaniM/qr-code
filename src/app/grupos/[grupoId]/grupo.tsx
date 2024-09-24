@@ -8,6 +8,11 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "~
 import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 import { QrCode } from "lucide-react";
+import { EditGrupo } from "./editgrupo";
+import { toast } from "sonner";
+import { redirect, useRouter } from "next/navigation"
+import { Checkbox } from "~/app/components/ui/checkbox";
+
 
 export default function GruposPage(props:{params:{grupoId: string}}){
 
@@ -23,6 +28,11 @@ const [descripcionQr, setDescripcionQr] = useState("")
 
 const [tituloQr, setTituloQr] = useState("")
 
+const [tituloTarea, setTituloTarea] = useState("")
+const [descripcionTarea, setDescripcionTarea] = useState("")
+
+const router = useRouter();
+
 
 const [openQr, setOpenQr] = useState(false)
 
@@ -33,113 +43,69 @@ async function addQr() {
 }
 
 
+
 const grupoId = props.params.grupoId;
 const {data: grupo} = api.grupos.get.useQuery({id: parseInt(grupoId)})
 const [open, setOpen] = useState(false)
 const {mutateAsync: tareas} = api.tareas.create.useMutation() 
+
+
 async function HandleCreate() {
+    if(!grupoId || !tituloTarea || !descripcionTarea){
+        return toast.error("Error");
+    }
+    try {
     await tareas({
-        title: titulo,
-        description: descripcion,
-        grupoId: parseInt(grupoId),
+        title: tituloTarea,
+        description: descripcionTarea,
+        grupoid: parseInt(grupoId),
         participanteid: (partId),
         createdAt: new Date,
         fecha: new Date
     })
+    toast.success("Cambios guardados correctamente")
+    router.refresh();
+    } catch (e) {
+
+        toast.error("Error");
+    }
     setOpen(false)
 }
 
 console.log(grupoId, grupo?.name, "test")
     return(
-      <div className="flex flex-row justify-space-around ">
-        <div className="w-1/2 flex flex-column text-center m-10 flex-auto">
-        <h1>Modificar Qr</h1>
-        <button onClick={() => setOpenQr(true)}>modificar</button>
-        <QrCode values={qrstring} size={256} />
-        <h1>{qrstring}</h1>
-          </div>
-          <div className="w-1/2 flex flex-column flex-auto">
-            <h1>Hola grupo {grupo?.name}</h1>
-            <button onClick={() => setOpen(true)} >agregar tareas</button>
-            <br></br>
-
-            <h1>Participantes:</h1>
-            <br />
-            {grupo?.participantes ? grupo.participantes.map((part) => (
-              <h1 key={part.id}> {part.id}: {part.name} {part.lastname}</h1>
-            )): null}
-
-<br />
-<h1>tareas:</h1>
-<br />
-
-            {grupo?.tareas ? grupo.tareas.map((part) => (
-                <h1 key={part.id}>N {part.id}: {part.title} {part.description}</h1>
-            )): null}
-            
-    <Dialog open={open}
-      onOpenChange={setOpen} >
-      <DialogTrigger asChild>
-        <Button variant="outline">Edit Profile</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>Edit profile</DialogTitle>
-          <DialogDescription>
-            Make changes to your profile here. Click save when you're done.
-          </DialogDescription>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Select onValueChange={(e) => setPartId(parseInt(e))}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-              {grupo?.participantes.map((part) => (
-                <SelectItem value={part.id.toString()} key={part.id}>{part.name} {part.lastname}</SelectItem>
-                
-              ))}
-
-                
-              </SelectContent>
-            </Select>
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="titulo" className="text-right">
-              titulo
-            </Label>
-            <Input
-              id="titulo"
-              value={titulo}
-              onChange={(e) => setTitulo(e.target.value)}
-              defaultValue="..."
-              className="col-span-3"
-              />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="descripcion" className="text-right">
-              descripcion
-            </Label>
-            <Input
-              id="descripcion"
-              value={descripcion}
-              onChange={(e) => setDescripcion(e.target.value)}
-              defaultValue="..."
-              className="col-span-3"
-              />
-          </div>
+      <div className="flex">
+        <div className="border border-black p-10 text-center">
+          <h1>Modificar Qr</h1>
+          <button onClick={() => setOpenQr(true)}>Modificar</button>
+          <QrCode values={qrstring} size={200} />
+          <h1>{qrstring}</h1>
         </div>
-        <DialogFooter>
-        <Button onClick={HandleCreate}>Save changes</Button>
-        <Button onClick={() => setOpen(false)}>Cancelar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-        </div>
+        <div className="border border-black p-10 text-center">
+          <h1>Hola grupo: {grupo?.name}</h1>
+          <button onClick={() => setOpen(true)} >agregar tareas</button>
+          <br></br>
+          <h1>Participantes:</h1>
+          <br />
+          {grupo?.participantes ? grupo.participantes.map((part) => (
+            <h1 className="flex border-2" key={part.id}>
+              <a href={`/integrantes/${part.id}`}> 
+                {part.id}: {part.name} {part.lastname}
+              </a>
+            </h1>
+          )): null}
+          <br />
+          <h1>tareas:</h1>
+          <br />
+          {grupo?.tareas ? grupo.tareas.map((part) => (
+          <h1 key={part.id}>N°{part.id}: {part.title} {part.description}</h1>
+          )): null}
+        <div className="w-full flex justify-center">
+            {grupo ? <EditGrupo grupo={grupo} /> : <div>No se encontró el grupo</div>}
+
+
+
+
         <Dialog open={openQr}
       onOpenChange={setOpenQr} >
       <DialogTrigger asChild>
@@ -148,37 +114,51 @@ console.log(grupoId, grupo?.name, "test")
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>open Qr</DialogTitle>
-          <DialogDescription>
-           {qrstring}
-          </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
-          <div className="grid grid-cols-4 items-center gap-4">
-            <Label htmlFor="name" className="text-right">
-              Name
-            </Label>
-            <Select onValueChange={(e) => setPartIdQr(e)}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-              {grupo?.participantes.map((part) => (
-                <SelectItem value={part.id.toString()} key={part.id}>{part.name} {part.lastname}</SelectItem>
-                
-              ))}
+          <h1>tareas:</h1>
+          {grupo?.tareas ? grupo.tareas.map((tareas) => (
+            <h1 key={tareas.id}>
+              
+              N°{tareas.id}: {tareas.title} 
+              <br />
+              {grupo?.participantes ? grupo.participantes.map((part) => (
+                <div key={part.id}>
+                <h1 className="flex border-2" >
+                  {part.id}: {part.name} {part.lastname}
+                </h1>
+                <Checkbox  ></Checkbox>
+                </div>
+                )): null}
+              
+              descripcion:{tareas.description}
+              </h1>
+          )): null}
+        </div>
+        <DialogFooter>
+        <Button onClick={() => setOpenQr(false)}>Cerrar</Button>
+        </DialogFooter>
+      </DialogContent>
+    </Dialog>
 
-                
-              </SelectContent>
-            </Select>
-          </div>
+
+
+    <Dialog open={open}
+      onOpenChange={setOpen} >
+      <DialogContent className="sm:max-w-[425px]">
+        <DialogHeader>
+          <DialogTitle>open Tarea</DialogTitle>
+        </DialogHeader>
+        <div className="grid gap-4 py-4">
+          
           <div className="grid grid-cols-4 items-center gap-4">
           <Label htmlFor="titulo" className="text-right">
               titulo
             </Label>
             <Input
               id="titulo"
-              value={tituloQr}
-              onChange={(e) => setTituloQr(e.target.value)}
+              value={tituloTarea}
+              onChange={(e) => setTituloTarea(e.target.value)}
               defaultValue="..."
               className="col-span-3"
               />
@@ -189,20 +169,25 @@ console.log(grupoId, grupo?.name, "test")
             </Label>
             <Input
               id="descripcion"
-              value={descripcionQr}
-              onChange={(e) => setDescripcionQr(e.target.value)}
+              value={descripcionTarea}
+              onChange={(e) => setDescripcionTarea(e.target.value)}
               defaultValue="..."
               className="col-span-3"
               />
           </div>
+              <DialogDescription>
+               {qrstring}
+              </DialogDescription>
         </div>
         <DialogFooter>
-        <Button onClick={() => addQr()}>Save changes</Button>
-        <Button onClick={() => setOpenQr(false)}>Cancelar</Button>
+        <Button onClick={() => HandleCreate()}>Save changes</Button>
+        <Button onClick={() => setOpen(false)}>Cancelar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
+              </div>
       </div>
+              </div>
 
     )
     

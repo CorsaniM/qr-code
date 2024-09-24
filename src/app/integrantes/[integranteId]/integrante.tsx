@@ -51,7 +51,7 @@ export default function IntegrantePage(props: {integranteId: number}){
         return toast.error("Error");
         
     }
-    
+    console.log(integrante)
            try {
                await updateP({
                    id: integrante!.id ?? 0,
@@ -60,7 +60,8 @@ export default function IntegrantePage(props: {integranteId: number}){
                    lastname: lastname ?? ""
                 })
                 toast.success("Cambios guardados correctamente")
-                router.refresh()
+                router.refresh();
+                router.push("/integrantes");
             } catch (e) {
                 
                 toast.error("Error");
@@ -74,12 +75,11 @@ export default function IntegrantePage(props: {integranteId: number}){
           setGrupoId(integrante.grupoId ?? 0);
         }
       }, [integrante]);
-    
     return (
         <div className="justify-center align-middle w-1/3">
 
         <Title>Integrante</Title>
-        <Button  onClick={() => UpdateParticipant()}>Guardar</Button>
+        <Button  onClick={() => UpdateParticipant()} >Guardar</Button>
         <Button className="mt-1" onClick={() => Delete(integrante!.id)}>Borrar</Button>
          <Input
           id="name"
