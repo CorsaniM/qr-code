@@ -11,6 +11,7 @@ export const participantesRouter = createTRPCRouter({
         name: z.string(),
         lastname: z.string(),
         grupoId: z.number(),
+        disponible: z.boolean().optional().default(true),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -68,6 +69,7 @@ export const participantesRouter = createTRPCRouter({
         name: z.string(),
         lastname: z.string(),
         grupoId: z.number(),
+        disponible: z.boolean().optional().default(true),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -77,6 +79,7 @@ export const participantesRouter = createTRPCRouter({
           name: input.name,
           lastname: input.lastname,
           grupoId: input.grupoId,
+          disponible: input.disponible,
         })
         .where(eq(participantes.id, input.id))
         .returning();

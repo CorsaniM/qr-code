@@ -1,4 +1,5 @@
 import { eq } from "drizzle-orm";
+import { QrCode } from "lucide-react";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
 import { db } from "~/server/db";
@@ -54,6 +55,7 @@ export const gruposRouter = createTRPCRouter({
         id: z.number(),
         name: z.string(),
         fecha_ultimo_trabajo: z.date(),
+        qrCode: z.string(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
@@ -62,6 +64,7 @@ export const gruposRouter = createTRPCRouter({
         .set({
           name: input.name,
           fecha_ultimo_trabajo: input.fecha_ultimo_trabajo,
+          qrCode: input.qrCode,
         })
         .where(eq(grupos.id, input.id))
         .returning(); // Para devolver los datos actualizados

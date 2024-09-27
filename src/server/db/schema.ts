@@ -45,6 +45,7 @@ export const grupos = createTable(
   {
     id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     name: text("name", { length: 256 }),
+    qrCode: text("qrCode", { length: 256 }),
     fecha_ultimo_trabajo: int("fecha_ultimo_trabajo", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),
