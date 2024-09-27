@@ -76,7 +76,6 @@ async function HandleCreate() {
     setOpen(false)
 }
 
-console.log(grupoId, grupo?.name, "test")
     return(
       <div className="flex">
         <div className="border border-black p-10 text-center">
