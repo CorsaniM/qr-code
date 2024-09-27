@@ -12,6 +12,7 @@ import { EditGrupo } from "./editgrupo";
 import { toast } from "sonner";
 import { redirect, useRouter } from "next/navigation"
 import { Checkbox } from "~/app/components/ui/checkbox";
+import EditQrCode from "./editQrCode";
 
 
 export default function GruposPage(props:{params:{grupoId: string}}){
@@ -33,18 +34,7 @@ const [descripcionTarea, setDescripcionTarea] = useState("")
 
 const router = useRouter();
 
-const [openQr, setOpenQr] = useState(false)
 
-const [qrstring, setqrString] = useState("")
-
-async function addQr(e:string) {
-  if(qrstring.includes(e)){
-    qrstring.replace(e, "")
-  }
-  else{
-    setqrString(e + "-" + qrstring) 
-  }
-}
 
 
 
@@ -78,12 +68,7 @@ async function HandleCreate() {
 
     return(
       <div className="flex">
-        <div className="border border-black p-10 text-center">
-          <h1>Modificar Qr</h1>
-          <button onClick={() => setOpenQr(true)}>Modificar</button>
-          <QrCode values={qrstring} size={200} />
-          <h1>{qrstring}</h1>
-        </div>
+        
         <div className="border border-black p-10 text-center">
           <h1>Hola grupo: {grupo?.name}</h1>
           <button onClick={() => setOpen(true)} >agregar tareas</button>
@@ -104,52 +89,12 @@ async function HandleCreate() {
           <h1 key={part.id}>N°{part.id}: {part.title} {part.description}</h1>
           )): null}
         <div className="w-full flex justify-center">
+        {grupo ? <EditQrCode grupo={grupo} /> : <div>No se encontró el grupo</div>}
             {grupo ? <EditGrupo grupo={grupo} /> : <div>No se encontró el grupo</div>}
 
 
 
 
-        <Dialog open={openQr}
-      onOpenChange={setOpenQr} >
-      <DialogTrigger asChild>
-        <Button variant="outline">open QR</Button>
-      </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>grupo: {grupo?.name}</DialogTitle>
-          <Checkbox onClick={() => addQr(grupo?.name ?? "")}  ></Checkbox>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          <h1>tareas:</h1>
-          {grupo?.tareas ? grupo.tareas.map((tareas) => (
-            <h1 key={tareas.id}>
-              
-              N°{tareas.id}: {tareas.title} 
-              <Checkbox onClick={() => addQr(tareas.title ?? "")}  ></Checkbox>
-              <div className="border border-black 2px w-full">  </div>
-              <br />
-              <h1>Participantes:</h1>
-              {grupo?.participantes ? grupo.participantes.map((part) => (
-                <div key={part.id}>
-                <h1 className="flex border-2" >
-                  {part.id}: {part.name} {part.lastname}
-                <Checkbox onClick={() => addQr(part.lastname ?? "")} ></Checkbox>
-                </h1>
-              <div className="border border-black 2px w-full">  </div>
-                </div>
-                )): null}
-              descripcion:{tareas.description}
-              <Checkbox onClick={() => addQr(tareas.description ?? "")}  ></Checkbox>
-              <div className="border border-black 2px w-full">  </div>
-              </h1>
-          )): null}
-        </div>
-        <DialogFooter>
-          <h1>{qrstring} hola</h1>
-        <Button onClick={() => setOpenQr(false)}>Cerrar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
 
 
 
