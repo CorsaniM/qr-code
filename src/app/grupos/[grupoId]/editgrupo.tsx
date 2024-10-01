@@ -14,6 +14,7 @@ interface participantes {
   id: number;
   name: string | null;
   lastname: string | null;
+  disponible: boolean | null;
   grupoId: number | null;
   createdAt: Date;
   updatedAt: Date | null;
@@ -22,6 +23,7 @@ interface Grupo  {
     id: number;
     name: string | null;
     fecha_ultimo_trabajo: Date;
+    qrCode: string | null;
     participantes: participantes[] | null;
     createdAt: Date;
     updatedAt: Date | null;
@@ -59,6 +61,7 @@ export function EditGrupo(props:{grupo: Grupo}) {
             id: grupo.id,
             name,
             fecha_ultimo_trabajo: grupo.fecha_ultimo_trabajo,
+            qrCode: grupo.qrCode ?? ""
         })
         setOpen(false)
     }

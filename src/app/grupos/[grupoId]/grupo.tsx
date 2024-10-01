@@ -13,6 +13,7 @@ import { toast } from "sonner";
 import { redirect, useRouter } from "next/navigation"
 import { Checkbox } from "~/app/components/ui/checkbox";
 import EditQrCode from "./editQrCode";
+import EditTarea from "./editTarea";
 
 
 export default function GruposPage(props:{params:{grupoId: string}}){
@@ -44,31 +45,18 @@ const [open, setOpen] = useState(false)
 const {mutateAsync: tareas} = api.tareas.create.useMutation() 
 
 
-async function HandleCreate() {
-    if(!grupoId || !tituloTarea || !descripcionTarea){
-        return toast.error("Error");
-    }
-    try {
-    await tareas({
-        title: tituloTarea,
-        description: descripcionTarea,
-        grupoid: parseInt(grupoId),
-        participanteid: (partId),
-        createdAt: new Date,
-        fecha: new Date
-    })
-    toast.success("Cambios guardados correctamente")
-    router.refresh();
-    } catch (e) {
 
-        toast.error("Error");
-    }
-    setOpen(false)
-}
 
     return(
       <div className="flex">
-        
+          
+        {
+        grupo?.qrCode ? 
+        <div> 
+          <QrCode values={grupo?.qrCode} size={200} />
+        <h1>{grupo?.qrCode}</h1> 
+        </div> : <h1>no existe codigo qr</h1>}
+
         <div className="border border-black p-10 text-center">
           <h1>Hola grupo: {grupo?.name}</h1>
           <button onClick={() => setOpen(true)} >agregar tareas</button>
@@ -88,58 +76,11 @@ async function HandleCreate() {
           {grupo?.tareas ? grupo.tareas.map((part) => (
           <h1 key={part.id}>N°{part.id}: {part.title} {part.description}</h1>
           )): null}
+          <br />
         <div className="w-full flex justify-center">
-        {grupo ? <EditQrCode grupo={grupo} /> : <div>No se encontró el grupo</div>}
+            {grupo ? <EditQrCode grupo={grupo} /> : <div>No se encontró el grupo</div>}
             {grupo ? <EditGrupo grupo={grupo} /> : <div>No se encontró el grupo</div>}
-
-
-
-
-
-
-
-    <Dialog open={open}
-      onOpenChange={setOpen} >
-      <DialogContent className="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>open Tarea</DialogTitle>
-        </DialogHeader>
-        <div className="grid gap-4 py-4">
-          
-          <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="titulo" className="text-right">
-              titulo
-            </Label>
-            <Input
-              id="titulo"
-              value={tituloTarea}
-              onChange={(e) => setTituloTarea(e.target.value)}
-              defaultValue="..."
-              className="col-span-3"
-              />
-          </div>
-          <div className="grid grid-cols-4 items-center gap-4">
-          <Label htmlFor="descripcion" className="text-right">
-              descripcion
-            </Label>
-            <Input
-              id="descripcion"
-              value={descripcionTarea}
-              onChange={(e) => setDescripcionTarea(e.target.value)}
-              defaultValue="..."
-              className="col-span-3"
-              />
-          </div>
-              <DialogDescription>
-               {qrstring}
-              </DialogDescription>
-        </div>
-        <DialogFooter>
-        <Button onClick={() => HandleCreate()}>Save changes</Button>
-        <Button onClick={() => setOpen(false)}>Cancelar</Button>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
+            {grupo ? <EditTarea grupo={grupo} /> : <div>No se encontró el grupo</div>}
               </div>
       </div>
               </div>

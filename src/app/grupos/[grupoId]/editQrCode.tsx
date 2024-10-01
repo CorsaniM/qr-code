@@ -10,12 +10,15 @@ import { api } from "~/trpc/react";
 import { QrCode } from "lucide-react";
 import { Console } from "console";
 import { Checkbox } from "~/app/components/ui/checkbox";
+import { toast } from "sonner";
+import { useRouter } from "next/navigation";
 
 interface participantes {
     id: number;
     name: string | null;
     lastname: string | null;
     grupoId: number | null;
+    disponible: boolean | null;
     createdAt: Date;
     updatedAt: Date | null;
   }
@@ -24,6 +27,7 @@ interface Grupo  {
     id: number;
     name: string | null;
     fecha_ultimo_trabajo: Date;
+    qrCode: string | null;
     participantes: participantes[] | null;
     tareas: Tarea[] | null;
     createdAt: Date;
@@ -32,18 +36,35 @@ interface Grupo  {
 
 interface Tarea {
   id: number;
-  name: string;
-  grupoid: number;
-  participantesid: number;
-  description: string;
-  fecha: Date;
+  title: string | null;
+  grupoid: number | null;
+  participantesid: number | null;
+  description: string | null;
+  fecha: Date | null;
 }
 
 export default function EditQrCode(props: { grupo: Grupo}) {
 
     const grupo = props.grupo
     const [openQr, setOpenQr] = useState(false)
-    const [qrstring, setqrString] = useState("")
+    const [qrstring, setqrString] = useState(grupo.qrCode ?? "")
+    const {mutateAsync: cambiarQrCode} = api.grupos.update.useMutation()
+    const router = useRouter()
+
+
+
+async function changeQrCode() {
+    if( !qrstring){
+        return toast.error("Error")
+    }    
+    await cambiarQrCode({
+        id: grupo.id,
+        qrCode: qrstring
+    })
+    router.refresh()
+    toast.success("Cambiado con exito")
+    setOpenQr(false)
+}
 
 async function addQr(e:string) {
   if(qrstring.includes(e)){
@@ -53,20 +74,15 @@ async function addQr(e:string) {
     setqrString(e + "-" + qrstring) 
   }
 }
-
+console.log(qrstring)
     return (
         <div>
-            <div className="border border-black p-10 text-center">
-          <h1>Modificar Qr</h1>
-          <button onClick={() => setOpenQr(true)}>Modificar</button>
-          <QrCode values={qrstring} size={200} />
-          <h1>{qrstring}</h1>
+            <div className="">
+          <Button onClick={() => setOpenQr(true)}>Modificar</Button>
         </div>
-
         <Dialog open={openQr}
       onOpenChange={setOpenQr} >
       <DialogTrigger asChild>
-        <Button variant="outline">open QR</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[700px]">
         <DialogHeader>
@@ -78,8 +94,8 @@ async function addQr(e:string) {
           {grupo?.tareas ? grupo.tareas.map((tareas) => (
             <h1 key={tareas.id}>
               
-              N°{tareas.id}: {tareas.name} 
-              <Checkbox onClick={() => addQr(tareas.name ?? "")}  ></Checkbox>
+              N°{tareas.id}: {tareas.title} 
+              <Checkbox onClick={() => addQr(tareas.title ?? "")}  ></Checkbox>
               <div className="border border-black 2px w-full">  </div>
               <br />
               <h1>Participantes:</h1>
@@ -100,10 +116,11 @@ async function addQr(e:string) {
         </div>
         <DialogFooter>
           <h1>{qrstring} hola</h1>
+        <Button onClick={ changeQrCode }> cambiar codigo qr </Button>
         <Button onClick={() => setOpenQr(false)}>Cerrar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
           </div>
     )
-}
+} 

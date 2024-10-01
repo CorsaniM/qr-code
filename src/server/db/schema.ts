@@ -35,7 +35,7 @@ export const participantes = createTable("participantes", {
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  grupoId: int("grupoId").references(() => grupos.id),
+  grupoId: int("grupoId"),
   updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
     () => new Date(),
   ),

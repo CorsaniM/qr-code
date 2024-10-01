@@ -53,9 +53,9 @@ export const gruposRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.number(),
-        name: z.string(),
-        fecha_ultimo_trabajo: z.date(),
-        qrCode: z.string(),
+        name: z.string().optional(),
+        fecha_ultimo_trabajo: z.date().optional(),
+        qrCode: z.string().optional(),
       }),
     )
     .mutation(async ({ input, ctx }) => {
