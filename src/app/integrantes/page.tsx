@@ -123,8 +123,43 @@ const [error, setError] = useState("")
 
 
 
-<div className="flex justify-between w-1/2">
-    <div className="border border-dashed p-10 mb-10">
+<div className="grid grid-cols-2  grid-rows-2 h-screen w-full flex-col justify-center">
+
+      <div className="border border-full border-black p-10">
+                  <h3>Crear participante</h3>
+          <label>Nombre del participante</label>
+
+          <Input
+                                      value={name}
+                                      placeholder='nombre...'
+                                      onChange={(e) => setName(e.target.value)}
+                                      />
+
+          <Input
+                                      value={lastname}
+                                      placeholder='apellido...'
+                                      onChange={(e) => setLastname(e.target.value)}
+                                      />
+          <label>Seleccione el grupo</label>
+          <Select onValueChange={(e) => setGrupoId(parseInt(e))}>
+              <SelectTrigger className="w-[180px]">
+                <SelectValue placeholder="Theme" />
+              </SelectTrigger>
+              <SelectContent>
+              {grupos?.map((grupo) => (
+                <SelectItem value={grupo.id.toString()} key={grupo.id}>{grupo.name}</SelectItem>
+                
+              ))}
+
+                
+              </SelectContent>
+            </Select>
+            <br />
+<button onClick={HandleCreate} className="w-full border border-dashed">crear participante</button                        >
+    
+
+        </div>
+        <div className="border border-full border-black p-10">
     <List>
         {participantes ? participantes.map((integrante) => {
           return(
@@ -142,44 +177,8 @@ const [error, setError] = useState("")
     </div>
 
 
-      <div className="border border-dashed p-10 mb-10">
-                  <h1>Crear participante</h1>
-          <label>Nombre del participante</label>
 
-          <Input
-                                      value={name}
-                                      placeholder='nombre...'
-                                      onChange={(e) => setName(e.target.value)}
-                                  />
-
-          <Input
-                                      value={lastname}
-                                      placeholder='apellido...'
-                                      onChange={(e) => setLastname(e.target.value)}
-                                  />
-          <label>Seleccione el grupo</label>
-          <Select onValueChange={(e) => setGrupoId(parseInt(e))}>
-              <SelectTrigger className="w-[180px]">
-                <SelectValue placeholder="Theme" />
-              </SelectTrigger>
-              <SelectContent>
-              {grupos?.map((grupo) => (
-                  <SelectItem value={grupo.id.toString()} key={grupo.id}>{grupo.name}</SelectItem>
-            
-            ))}
-
-                
-              </SelectContent>
-            </Select>
-            <br />
-<button onClick={HandleCreate}>crear participante</button                        >
-
-      </div>
-
-
-
-
-<div className="border border-dashed p-10 mb-10">
+<div className="border border-full border-black p-10">
 
 <label>Nombre del grupo</label>
                   <Input
@@ -191,20 +190,21 @@ const [error, setError] = useState("")
                                           setError("")
                                         }catch(e){
                                           setError("ingrese un nombre menor de 12 caracteres")
-                                          }
+                                        }
                                       }}
                                       />
                                       {error && <p className="text-red-500">{error}</p>}
 
 
-                                      <button onClick={HandleCreateGrupo} disabled={isLoading}>crear grupo</button>
+                                      <button onClick={HandleCreateGrupo} className="w-full border border-dashed mb-10 " disabled={isLoading}>crear grupo</button>
                                       </div>
-                                      <List>
+                            <div className="border border-full border-black p-10">
+                          <List>
         {grupos ? grupos.map((grupo) => {
           return(
             <div  key={grupo.id} className="flex">
             <ListTile
-            title={grupo.name! + " " + grupo.id}
+            title={grupo.id + "-" + grupo.name}
             href={`/grupos/${grupo.id}`}
             // onClick={() => deleteP}
             />
@@ -215,6 +215,7 @@ const [error, setError] = useState("")
         }) : (<h1>No existen participantes</h1>)}
     </List>
     </div>
+  </div>
 
 
   );

@@ -31,6 +31,7 @@ export const participantes = createTable("participantes", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name", { length: 256 }),
   lastname: text("lastname", { length: 256 }),
+  disponible: int("disponible", {mode: "boolean"}),
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
@@ -44,6 +45,7 @@ export const grupos = createTable(
   {
     id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
     name: text("name", { length: 256 }),
+    qrCode: text("qrCode", { length: 256 }),
     fecha_ultimo_trabajo: int("fecha_ultimo_trabajo", { mode: "timestamp" })
       .default(sql`(unixepoch())`)
       .notNull(),

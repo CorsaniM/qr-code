@@ -9,7 +9,7 @@ export const tareasRouter = createTRPCRouter({
     .input(
       z.object({
         title: z.string(),
-        grupoId: z.number(),
+        grupoid: z.number(),
         participanteid: z.number(),
         description: z.string(),
         fecha:z.date(),

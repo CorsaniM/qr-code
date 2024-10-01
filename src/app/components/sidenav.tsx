@@ -9,7 +9,7 @@ export default function Sidenav() {
     ];
 
     return (
-        <div className="left-0 top-36 bg-slate-500 fixed h-screen w-1/12">
+        <div className="left-0 top-36 bg-slate-500 fixed h-screen w-1/10">
             <h1>Menu</h1>
             <div className="">
                 <ul className="m-5">

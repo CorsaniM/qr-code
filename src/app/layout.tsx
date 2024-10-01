@@ -22,7 +22,7 @@ export default function RootLayout({
       <body>
         <Header/>
         <Sidenav/>
-        <div className="mb-10 mt-40 mr-36 flex justify-center">
+        <div className="mt-40 ml-28 flex justify-center">
 
         <TRPCReactProvider>{children}
         <Toaster />
