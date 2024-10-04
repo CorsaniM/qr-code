@@ -50,12 +50,7 @@ const {mutateAsync: tareas} = api.tareas.create.useMutation()
     return(
       <div className="flex">
           
-        {
-        grupo?.qrCode ? 
-        <div> 
-          <QrCode values={grupo?.qrCode} size={200} />
-        <h1>{grupo?.qrCode}</h1> 
-        </div> : <h1>no existe codigo qr</h1>}
+        
 
         <div className="border border-black p-10 text-center">
           <h1>Hola grupo: {grupo?.name}</h1>
@@ -83,6 +78,12 @@ const {mutateAsync: tareas} = api.tareas.create.useMutation()
             {grupo ? <EditTarea grupo={grupo} /> : <div>No se encontró el grupo</div>}
               </div>
       </div>
+      {
+        grupo?.qrCode ? 
+        <div> 
+          <QrCode values={grupo?.qrCode} size={200} />
+        <h1>{grupo?.qrCode}</h1> 
+        </div> : <h1>no existe codigo qr</h1>}
               </div>
 
     )

@@ -10,7 +10,7 @@ export const tareas = createTable(
   "tareas",
   {
     id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
-    title: text("name", { length: 256 }),
+    title: text("title", { length: 256 }),
     grupoid: int("grupoid").references(() => grupos.id),
     participantesid: int("participantesid").references(() => participantes.id),
     description: text("description", { length: 256 }),

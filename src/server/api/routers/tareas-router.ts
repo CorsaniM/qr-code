@@ -10,7 +10,7 @@ export const tareasRouter = createTRPCRouter({
       z.object({
         title: z.string(),
         grupoid: z.number(),
-        participanteid: z.number(),
+        participantesid: z.number(),
         description: z.string(),
         fecha:z.date(),
         createdAt: z.date(),
@@ -19,7 +19,14 @@ export const tareasRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const [respuesta] = await ctx.db
         .insert(tareas)
-        .values(input)
+        .values({
+          title: input.title,
+          grupoid: input.grupoid,
+          participantesid: input.participantesid,
+          description: input.description,
+          fecha: input.fecha,
+          createdAt: input.createdAt,
+        })
         .returning();
 
       if (!respuesta) {

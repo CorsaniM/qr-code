@@ -50,31 +50,31 @@ export default function EditTarea(props: {grupo: Grupo}) {
     const [tituloTarea,setTituloTarea] = useState("")
     const [descripcionTarea,setDescripcionTarea] = useState("")
     const router = useRouter()
-    const tareas = grupo.tareas
     const participantes = grupo.participantes
-    const [participanteId, setParticipanteId] = useState(0)
+    const [participanteId, setParticipanteId] = useState("0")
     const {mutateAsync: crearTareas} = api.tareas.create.useMutation()
     
     async function HandleCreate() {
-        if(!grupo.id || !tituloTarea || !descripcionTarea){
-            return toast.error("Error");
+        if(participanteId === "0" || !tituloTarea || !descripcionTarea){
+            return toast.error("Error total");
         }
+        console.log(participanteId, "holaaaaaaa")
         try {
         await crearTareas({
             title: tituloTarea,
             description: descripcionTarea,
             grupoid: grupo.id,
-            participanteid: participanteId,
+            participantesid: parseInt(participanteId) ?? 0,
             createdAt: new Date,
             fecha: new Date
         })
-        toast.success("Cambios guardados correctamente")
         router.refresh();
+        toast.success("Cambios guardados correctamente")
+        setOpen(false)
         } catch (e) {
     
-            toast.error("Error");
+            toast.error("Error garrafal");
         }
-        setOpen(false)
     }
     return <div>
         <Button onClick={() => setOpen(true)}>open Tarea</Button>
@@ -109,10 +109,24 @@ export default function EditTarea(props: {grupo: Grupo}) {
               defaultValue="..."
               className="col-span-3"
               />
+              
           </div>
-              <DialogDescription>
-               {grupo?.qrCode ?? "No se encontró el grupo"} 
-              </DialogDescription>
+          <div className="w-[250px]">
+          <Select onValueChange={(e) => setParticipanteId(e)} >
+          <SelectTrigger>
+          <SelectValue placeholder="Seleccionar participante"></SelectValue>
+          
+            </SelectTrigger>
+          <SelectContent>
+          {
+            participantes ? participantes?.map((part) => (
+              <SelectItem  value={part.id.toString() } key={part.id}>
+              {part.name + " " + part.lastname}
+            </SelectItem>
+          )) : <h1> no existe participantes</h1>}
+          </SelectContent>
+        </Select>
+          </div>
         </div>
         <DialogFooter>
         <Button onClick={() => HandleCreate()}>Save changes</Button>
