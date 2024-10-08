@@ -27,7 +27,6 @@ interface Grupo  {
     name: string | null;
     fecha_ultimo_trabajo: Date;
     qrCode: string | null;
-    participantes: participantes[] | null;
     tareas: Tarea[] | null;
     createdAt: Date;
     updatedAt: Date | null;
