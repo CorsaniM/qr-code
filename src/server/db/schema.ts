@@ -27,6 +27,22 @@ export const tareas = createTable(
   }),
 );
 
+export const grupo_participantes = createTable("grupo_participantes", {
+  id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
+  grupo_id: int("grupo_id")
+    .references(() => grupos.id) // Llave foránea a la tabla grupos
+    .notNull(),
+  participante_id: int("participante_id")
+    .references(() => participantes.id) // Llave foránea a la tabla participantes
+    .notNull(),
+  createdAt: int("created_at", { mode: "timestamp" })
+    .default(sql`(unixepoch())`)
+    .notNull(),
+  updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
+    () => new Date(),
+  ),
+});
+
 export const participantes = createTable("participantes", {
   id: int("id", { mode: "number" }).primaryKey({ autoIncrement: true }),
   name: text("name", { length: 256 }),
@@ -35,7 +51,6 @@ export const participantes = createTable("participantes", {
   createdAt: int("created_at", { mode: "timestamp" })
     .default(sql`(unixepoch())`)
     .notNull(),
-  grupoId: int("grupoId"),
   updatedAt: int("updated_at", { mode: "timestamp" }).$onUpdate(
     () => new Date(),
   ),
@@ -60,15 +75,25 @@ export const grupos = createTable(
     nameIndex: index("name_idx").on(example.name),
   }),
 );
-export const participantesRelations = relations(participantes, ({ one }) => ({
-  grupos: one(grupos, {
-    fields: [participantes.grupoId],
+export const participantesRelations = relations(participantes, ({ many }) => ({
+
+  tareas: many(tareas),
+  grupos: many(grupo_participantes),
+}));
+
+export const grupoParticipantesRelations = relations(grupo_participantes, ({ one }) => ({
+  grupo: one(grupos, {
+    fields: [grupo_participantes.grupo_id], // Relaciona con la tabla grupos
     references: [grupos.id],
+  }),
+  participante: one(participantes, {
+    fields: [grupo_participantes.participante_id], // Relaciona con la tabla participantes
+    references: [participantes.id],
   }),
 }));
 
 export const gruposRelations = relations(grupos, ({ many }) => ({
-  participantes: many(participantes),
+  participantes: many(grupo_participantes),
   tareas: many(tareas),
 }));
 

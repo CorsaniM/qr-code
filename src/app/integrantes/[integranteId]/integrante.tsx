@@ -51,7 +51,6 @@ export default function IntegrantePage(props: {integranteId: number}){
         return toast.error("Error");
         
     }
-    console.log(integrante)
            try {
                await updateP({
                    id: integrante!.id ?? 0,
@@ -72,7 +71,6 @@ export default function IntegrantePage(props: {integranteId: number}){
         if (integrante) {
           setName(integrante.name ?? "");
           setLastname(integrante.lastname ?? "");
-          setGrupoId(integrante.grupoId ?? 0);
         }
       }, [integrante]);
     return (

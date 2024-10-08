@@ -17,7 +17,6 @@ interface participantes {
     id: number;
     name: string | null;
     lastname: string | null;
-    grupoId: number | null;
     disponible: boolean | null;
     createdAt: Date;
     updatedAt: Date | null;
@@ -74,7 +73,6 @@ async function addQr(e:string) {
     setqrString(e + "-" + qrstring) 
   }
 }
-console.log(qrstring)
     return (
         <div>
             <div className="">

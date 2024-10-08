@@ -27,9 +27,7 @@ export const gruposRouter = createTRPCRouter({
       }
     }),
   list: publicProcedure.query(async () => {
-    const Grupos = await db.query.grupos.findMany({
-      with: { participantes: true, tareas: true },
-    });
+    const Grupos = await db.query.grupos.findMany();
 
     return Grupos;
   }),

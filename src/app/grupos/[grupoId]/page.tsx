@@ -8,8 +8,6 @@ export default function Page(props:{params:{grupoId: string}}) {
     const id = props.params.grupoId 
 
 
-    console.log(id)
-    
 if (id) {
    return(
        <GruposPage  params={{grupoId:id}}/>

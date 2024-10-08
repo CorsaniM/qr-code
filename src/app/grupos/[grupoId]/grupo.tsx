@@ -15,36 +15,19 @@ import { Checkbox } from "~/app/components/ui/checkbox";
 import EditQrCode from "./editQrCode";
 import EditTarea from "./editTarea";
 
-
 export default function GruposPage(props:{params:{grupoId: string}}){
-
-const [partId, setPartId] = useState(0)
-
-const [descripcion, setDescripcion] = useState("")
-
-const [titulo, setTitulo] = useState("")
-
-const [partIdQr, setPartIdQr] = useState("")
-
-const [descripcionQr, setDescripcionQr] = useState("")
-
-const [tituloQr, setTituloQr] = useState("")
-
-const [tituloTarea, setTituloTarea] = useState("")
-const [descripcionTarea, setDescripcionTarea] = useState("")
-
-const router = useRouter();
 
 
 
 
 
 const grupoId = props.params.grupoId;
+
 const {data: grupo} = api.grupos.get.useQuery({id: parseInt(grupoId)})
+const {data: participante} = api.participants.getByGroup.useQuery({grupoId: parseInt(grupoId)})
 const [open, setOpen] = useState(false)
-const {mutateAsync: tareas} = api.tareas.create.useMutation() 
 
-
+console.log(grupoId)
 
 
     return(
@@ -58,7 +41,7 @@ const {mutateAsync: tareas} = api.tareas.create.useMutation()
           <br></br>
           <h1>Participantes:</h1>
           <br />
-          {grupo?.participantes ? grupo.participantes.map((part) => (
+          {participante ? participante.map((part) => (
             <h1 className="flex border-2" key={part.id}>
               <a href={`/integrantes/${part.id}`}> 
                 {part.id}: {part.name} {part.lastname}

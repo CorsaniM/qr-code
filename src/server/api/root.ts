@@ -2,6 +2,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { gruposRouter } from "./routers/grupos-router";
 import { participantesRouter } from "./routers/participantes-router";
 import { tareasRouter } from "./routers/tareas-router";
+import { grupo_ParticipanteRouter } from "./routers/grupo-participante-router";
 
 /**
  * This is the primary router for your server.
@@ -9,6 +10,7 @@ import { tareasRouter } from "./routers/tareas-router";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
+  gruposParticipantes: grupo_ParticipanteRouter,
   participants: participantesRouter,
   grupos: gruposRouter,
   tareas: tareasRouter,

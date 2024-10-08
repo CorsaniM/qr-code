@@ -9,13 +9,13 @@ import { Label } from "~/components/ui/label";
 import { api } from "~/trpc/react";
 import { QrCode } from "lucide-react";
 import { Console } from "console";
+import { Checkbox } from "@radix-ui/react-checkbox";
 
 interface participantes {
   id: number;
   name: string | null;
   lastname: string | null;
   disponible: boolean | null;
-  grupoId: number | null;
   createdAt: Date;
   updatedAt: Date | null;
 }
@@ -34,18 +34,15 @@ export function EditGrupo(props:{grupo: Grupo}) {
     const [open,setOpen] = useState(false)
     const [name, setName] = useState(grupo.name ?? "")
     const {mutateAsync: uploadgrupo} = api.grupos.update.useMutation()
+    const { mutateAsync: removeParticipant } = api.gruposParticipantes.removeParticipant.useMutation();
+    const { mutateAsync: addParticipant } = api.gruposParticipantes.addParticipant.useMutation();
     const [participanteId, setParticipanteId] = useState('');
     const [mostrarDesocupados, setMostrarDesocupados] = useState(false); // Estado para alternar entre todos/desocupados
     const [participantesSeleccionados, setParticipantesSeleccionados] = useState([]);
   
-    // Función para filtrar los participantes
-    const filtrarParticipantes = () => {
-      if (mostrarDesocupados) {
-        return grupo?.participantes?.filter((part) => part.grupoId === null); // Asumiendo que 'disponible' es la propiedad que indica si está desocupado
-      }
-      return grupo?.participantes ?? [];
-    };
-  
+    const {data: participantes} = api.participants.list.useQuery()
+    const participanteGrupo = grupo.participantes 
+    console.log(participantes)
     // Función para manejar la selección de participantes
     /*const handleSelect = (e) => {
       console.log(e);
@@ -65,7 +62,31 @@ export function EditGrupo(props:{grupo: Grupo}) {
         })
         setOpen(false)
     }
+    async function change(partId: number) {
+      try {
+        await addParticipant({
+          grupoId: grupo.id, // El ID del grupo
+          participantId: partId, // El ID del participante a agregar
+        });
+        // Después de que la actualización sea exitosa, podrías querer actualizar el estado o hacer refetch
+        console.log("Participante agregado al grupo");
+      } catch (error) {
+        console.error("Error agregando participante al grupo", error);
+      }
+    }
 
+    async function delet(partId: number) {
+      try {
+        await removeParticipant({
+          grupoId: grupo.id, // El ID del grupo
+          participantId: partId, // El ID del participante a eliminar
+        });
+        console.log("Participante eliminado del grupo");
+      } catch (error) {
+        console.error("Error eliminando participante del grupo", error);
+      }
+    }
+    
 
 
     return (
@@ -81,7 +102,7 @@ export function EditGrupo(props:{grupo: Grupo}) {
         <DialogHeader>
           <DialogTitle>Edit equipo</DialogTitle>
           <DialogDescription>
-            Elige que participantes hagan su tarea
+            Elige a los participantes del grupo
           </DialogDescription>
         </DialogHeader>
         <div className="grid gap-4 py-4">
@@ -100,31 +121,24 @@ export function EditGrupo(props:{grupo: Grupo}) {
         <label htmlFor="participante" className="text-center">
           Participante:
         </label>
-          <div className="flex">
-        <select onChange={(e) => setMostrarDesocupados(e.target.value === 'desocupados')} className="w-[180px]">
-          <option value="todos">Ver todos</option>
-          <option value="desocupados">Ver desocupados</option>
-        </select>
-<br />
-        <select onChange={(e) => setParticipanteId(e.target.value)} className="w-[180px]">
-          <option value="">Seleccionar participante</option>
-          {filtrarParticipantes()?.map((part) => (
-            console.log(part),
-            <option value={part.id.toString()} key={part.id}>
-              {part.name} {part.lastname}
-            </option>
-          ))}
-        </select>
-      </div>
+          
 
-      {/* Mostrar los participantes seleccionados */}
-      <div className="mt-4">
-        <h3>Participantes seleccionados:</h3>
+        <div className="mt-4">
+        <h3>Participantes totales:</h3>
+        <br />
         <ul>
-          {participantesSeleccionados.map((part) => (
-            console.log(part),
-            <li key={1}> Hola </li>
-          ))} : <div> nada</div>
+          {participantes?.map((part)  => (
+            <li key={part.id} className="flex justify-between"> {part.name} {part.lastname} <Button onClick={() => change(part.id)}>agregar al grupo</Button></li>
+          ))} 
+        </ul>
+      </div>
+      <div className="mt-4">
+        <h3>Participantes del grupo:</h3>
+        <br />
+        <ul>
+          {participanteGrupo?.map((part) => (
+            <li key={part.id} className="flex justify-between"> {part.name} {part.lastname} <Button onClick={() => delet(part.id)}>eliminar del grupo</Button></li>
+          ))} 
         </ul>
       </div>
         

@@ -17,7 +17,6 @@ interface participantes {
     id: number;
     name: string | null;
     lastname: string | null;
-    grupoId: number | null;
     disponible: boolean | null;
     createdAt: Date;
     updatedAt: Date | null;
@@ -58,7 +57,6 @@ export default function EditTarea(props: {grupo: Grupo}) {
         if(participanteId === "0" || !tituloTarea || !descripcionTarea){
             return toast.error("Error total");
         }
-        console.log(participanteId, "holaaaaaaa")
         try {
         await crearTareas({
             title: tituloTarea,
@@ -114,9 +112,8 @@ export default function EditTarea(props: {grupo: Grupo}) {
           <div className="w-[250px]">
           <Select onValueChange={(e) => setParticipanteId(e)} >
           <SelectTrigger>
-          <SelectValue placeholder="Seleccionar participante"></SelectValue>
-          
-            </SelectTrigger>
+          <SelectValue placeholder="Seleccionar participante">
+
           <SelectContent>
           {
             participantes ? participantes?.map((part) => (
@@ -125,6 +122,9 @@ export default function EditTarea(props: {grupo: Grupo}) {
             </SelectItem>
           )) : <h1> no existe participantes</h1>}
           </SelectContent>
+          
+            </SelectValue>
+            </SelectTrigger>
         </Select>
           </div>
         </div>

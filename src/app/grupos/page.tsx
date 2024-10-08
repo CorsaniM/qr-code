@@ -7,7 +7,6 @@ import { api } from "~/trpc/react"
 export default function Page(){
 
 const {data:grupos} = api.grupos.list.useQuery()
-
     return(
         <div>
             <h1 >Hola grupos</h1>

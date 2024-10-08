@@ -29,7 +29,7 @@ const { mutateAsync: CreateGrupo} = api.grupos.create.useMutation()
 
 
 
-// const {data: participantes} = api.participants.list.useQuery()
+const {data: participantes} = api.participants.list.useQuery()
 const {data: grupos} = api.grupos.list.useQuery()
 
 
@@ -43,9 +43,6 @@ async function HandleUpdate() {
     grupoId: 0
   })
 }
-
-const participantes = grupos?.flatMap(grupo => grupo.participantes) ?? [];
-
 const longText = z.object({
   text: z.string().max(12),
 })
@@ -166,7 +163,7 @@ const [error, setError] = useState("")
             <div key={integrante.id} className="flex">
             <ListTile
             
-            title={integrante.name + " " + integrante.grupoId}
+            title={ integrante.id + "-" + integrante.name + " " + integrante.lastname }
             href={`/integrantes/${integrante.id}`}
             />
 

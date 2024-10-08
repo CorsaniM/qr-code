@@ -1,8 +1,9 @@
-import { eq } from "drizzle-orm";
+import { eq, inArray } from "drizzle-orm";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
-import { db } from "~/server/db";
+import { db, schema } from "~/server/db";
 import { participantes } from "~/server/db/schema";
+
 
 export const participantesRouter = createTRPCRouter({
   create: publicProcedure
@@ -17,9 +18,17 @@ export const participantesRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const [respuesta] = await ctx.db
         .insert(participantes)
-        .values(input)
+        .values({
+          name: input.name,
+          lastname: input.lastname,
+          disponible: input.disponible,
+        })
         .returning();
 
+        const participante = await db.insert(schema.grupo_participantes).values({
+          grupo_id: input.grupoId ?? 0,
+          participante_id: respuesta?.id ?? 0,
+        })
       if (!respuesta) {
         throw new Error("Error al crear participante");
       }
@@ -27,6 +36,21 @@ export const participantesRouter = createTRPCRouter({
       return respuesta; // Devolver el participante creado
     }),
 
+    getByGroup: publicProcedure
+    .input(
+      z.object({
+        grupoId: z.number(),
+      }),
+    )
+    .query(async ({ input, ctx }) => {
+      const grupo_participants = await ctx.db.query.grupo_participantes.findMany({
+        where: eq(schema.grupo_participantes.grupo_id, input.grupoId),
+      })
+      const participants = await ctx.db.query.participantes.findMany({
+        where: inArray(schema.participantes.id, grupo_participants.map(participant => participant.participante_id)),
+      })
+      return participants ?? []
+    }),
   get: publicProcedure
     .input(
       z.object({
@@ -44,19 +68,7 @@ export const participantesRouter = createTRPCRouter({
 
       return participante;
     }),
-  getByGrupoId: publicProcedure
-    .input(
-      z.object({
-        grupoId: z.number(),
-      }),
-    )
-    .query(async ({ input, ctx }) => {
-      const participante = await ctx.db.query.participantes.findMany({
-        where: eq(participantes?.grupoId, input.grupoId),
-      });
-
-      return participante;
-    }),
+  
   list: publicProcedure.query(async ({ ctx }) => {
     const participantes = await ctx.db.query.participantes.findMany();
     return participantes;
@@ -78,7 +90,6 @@ export const participantesRouter = createTRPCRouter({
         .set({
           name: input.name,
           lastname: input.lastname,
-          grupoId: input.grupoId,
           disponible: input.disponible,
         })
         .where(eq(participantes.id, input.id))
